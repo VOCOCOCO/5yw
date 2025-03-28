@@ -43,33 +43,34 @@
 
     <div class="image-container" id="imageContainer">
         <h2>Поздравляем! Вот ваша картинка:</h2>
-        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fbnkirov.ru%2Fnews%2Fpolitika%2Ftg-novosti-o-chem-na-nedele-pisali-regionalnye-telegram-kanaly-%2F&psig=AOvVaw2z3ZE5S14NhhzC5C33lISb&ust=1743246174588000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCMCMqZnQrIwDFQAAAAAdAAAAABAE" alt="Картинка">
+        <img src="https://via.placeholder.com/600x400?text=Your+Image" alt="Картинка">
     </div>
 
     <script>
         // Функция для открытия инвойса через Telegram Web App
         function openPayment() {
-            // Ссылка на инвойс (замени на свою ссылку с инвойсом)
+            // Ссылка на инвойс
             const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc"; 
             
-            // Функция обратного вызова (необязательная)
-            const callBack = function() {
-                alert("Инвойс открыт!");
-            };
-
             // Открываем инвойс
-            window.Telegram.WebApp.openInvoice(invoiceLink, callBack);
+            window.Telegram.WebApp.openInvoice(invoiceLink, function() {
+                alert("Инвойс открыт!");
+            });
         }
 
-        // Функция, которая будет вызываться после успешного платежа
+        // Эта функция будет вызываться после того, как бот подтвердит успешную оплату
         function showImage() {
             // Показать картинку после успешного платежа
             document.getElementById('imageContainer').style.display = 'block';
         }
 
-        // Эта функция должна быть вызвана после успешного платежа в вашем боте
-        // Для демонстрации мы вызовем её сразу через 3 секунды (симуляция успешной оплаты)
-        setTimeout(showImage, 3000);
+        // Симуляция успешной оплаты, которая должна быть вызвана на сервере бота
+        // Для демонстрации вызываем функцию через 3 секунды
+        function simulatePaymentSuccess() {
+            // Здесь будет логика получения успешной оплаты от бота
+            // В реальном приложении эта функция будет вызвана, когда бот подтвердит оплату
+            setTimeout(showImage, 3000);
+        }
     </script>
 </body>
 </html>
