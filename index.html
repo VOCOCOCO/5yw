@@ -34,9 +34,18 @@
     <button class="button" onclick="openPayment()">Оплатить</button>
 
     <script>
+        // Функция для открытия инвойса через Telegram Web App
         function openPayment() {
-            // Здесь указывается ссылка для открытия инвойса
-            WebApp.openInvoice("https://t.me/Walletstsvbot", "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc");
+            // Ссылка на инвойс
+            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";
+            
+            // Функция обратного вызова (необязательная)
+            const callBack = function() {
+                alert("Инвойс открыт!");
+            };
+
+            // Открываем инвойс
+            window.Telegram.WebApp.openInvoice(invoiceLink, callBack);
         }
     </script>
 </body>
