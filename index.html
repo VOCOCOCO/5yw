@@ -29,10 +29,6 @@
             display: none;
             margin-top: 20px;
         }
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-        }
     </style>
 </head>
 <body>
@@ -42,29 +38,31 @@
     <button class="button" onclick="openPayment()">Оплатить</button>
 
     <div class="image-container" id="imageContainer">
-        <h2>Вы купили картинку!</h2>
-        <img id="purchasedImage" src="your-image-url.jpg" alt="Картинка" />
+        <h2>Поздравляем с покупкой!</h2>
+        <img src="https://yourimageurl.com/image.jpg" alt="Изображение" style="max-width: 100%; height: auto;">
     </div>
 
     <script>
-        // Функция для открытия инвойса
+        // Функция для открытия инвойса через Telegram Web App
         function openPayment() {
             // Ссылка на инвойс
-            const invoiceLink = ""; // Замените на ссылку вашего инвойса
+            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";
 
             // Открываем инвойс
             window.Telegram.WebApp.openInvoice(invoiceLink, function() {
-                console.log("Инвойс открыт!");
+                // Уведомление об успешной оплате
+                window.Telegram.WebApp.sendData("payment_success");
             });
         }
 
-        // Обработчик успешной оплаты
-        window.Telegram.WebApp.onEvent('payment', function(event) {
-            // Проверяем успешный платеж
-            if (event.success) {
-                document.getElementById('imageContainer').style.display = 'block';  // Показываем картинку
-            }
+        // Прослушиваем данные от бота
+        window.Telegram.WebApp.onEvent('payment_success', function(data) {
+            // Показываем картинку после успешной оплаты
+            document.getElementById("imageContainer").style.display = "block";
         });
+
+        // Инициализация Telegram WebApp
+        window.Telegram.WebApp.ready();
     </script>
 </body>
 </html>
