@@ -14,6 +14,22 @@
             margin: 0;
             padding: 20px;
         }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #1e1e1e;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+        .tab.active {
+            background: #007bff;
+        }
         .container {
             display: flex;
             justify-content: center;
@@ -22,7 +38,6 @@
         .gift {
             width: 150px;
             padding: 10px;
-            
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.2s;
@@ -39,7 +54,6 @@
             opacity: 0.5;
             cursor: default;
         }
-        /* Цена */
         .price {
             position: absolute;
             bottom: 18px;
@@ -51,7 +65,6 @@
             font-weight: bold;
             font-size: 14px;
         }
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -85,59 +98,74 @@
             cursor: pointer;
             margin-top: 10px;
         }
+        #collection {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <h1>Выберите подарок</h1>
+    <h1>Магазин подарков</h1>
 
-    <div class="container">
-        <!-- Первый подарок -->
-        <div class="gift" id="gift1">
-            <img src="photo_2025-03-28_21-57-16.jpg" alt="Подарок 1">  <!-- Замени на свою картинку -->
-            
-            <div class="price">⭐ 5000</div>
-        </div>
-        
-        <!-- Второй подарок (неактивный) -->
-        <div class="gift inactive" id="gift2">
-            <img src="101010.jfif" alt="Подарок 2">  <!-- Замени на свою картинку -->
-            
-            
+    <div class="tabs">
+        <div class="tab active" id="shopTab">Магазин</div>
+        <div class="tab" id="collectionTab">Коллекция</div>
+    </div>
+
+    <div id="shop">
+        <div class="container">
+            <div class="gift" id="gift1">
+                <img src="photo_2025-03-28_21-57-16.jpg" alt="Подарок 1">
+                <div class="price">⭐️ 5000</div>
+            </div>
+            <div class="gift inactive" id="gift2">
+                <img src="101010.jfif" alt="Подарок 2">
+            </div>
         </div>
     </div>
 
-    <!-- Модальное окно покупки -->
+    <div id="collection">
+        <h2>Ваши подарки</h2>
+        <div class="container" id="collectionContainer"></div>
+    </div>
+
     <div class="modal" id="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Retro Coin</h2>
+            <h2>Коллекционный Мамонт</h2>
             <p>Осталось <span id="stock">250</span> из 250</p>
-            <button class="buy-button" onclick="buyGift()">Купить за ⭐5000</button>
+            <button class="buy-button" onclick="buyGift()">Купить за ⭐️5000</button>
         </div>
     </div>
 
     <script>
         window.Telegram.WebApp.ready();
 
-        let stock = 250; // Начальный тираж
+        let stock = localStorage.getItem("stock") ? parseInt(localStorage.getItem("stock")) : 250;
+        let ownedGifts = JSON.parse(localStorage.getItem("ownedGifts")) || [];
 
-        // Открываем модальное окно по клику на первый подарок
+        document.getElementById("stock").innerText = stock;
+
         document.getElementById("gift1").addEventListener("click", function () {
             document.getElementById("modal").style.display = "flex";
         });
 
-        // Закрываем модальное окно
         function closeModal() {
             document.getElementById("modal").style.display = "none";
         }
 
-        // Покупка подарка
         function buyGift() {
-            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc"; // Замените на реальный инвойс
+            const invoiceLink = "https://t.me/YOUR_BOT_USERNAME?start=paymentPayload";
 
             window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
-                if (status === "paid") {stock--;
+                if (status === "paid") {
+                    stock--;
+                    localStorage.setItem("stock", stock);
                     document.getElementById("stock").innerText = stock;
+                    
+                    ownedGifts.push("photo_2025-03-28_21-57-16.jpg");
+                    localStorage.setItem("ownedGifts", JSON.stringify(ownedGifts));
+
+                    updateCollection();
                     alert("Поздравляем, подарок куплен!");
                     closeModal();
                 } else {
@@ -145,6 +173,35 @@
                 }
             });
         }
+
+        function updateCollection() {
+            const collectionContainer = document.getElementById("collectionContainer");
+            collectionContainer.innerHTML = "";
+            ownedGifts.forEach(gift => {
+                const img = document.createElement("img");
+                img.src = gift;
+                img.style.width = "150px";
+                img.style.borderRadius = "10px";
+                collectionContainer.appendChild(img);
+            });
+        }
+
+        document.getElementById("shopTab").addEventListener("click", function () {
+            document.getElementById("shop").style.display = "block";
+            document.getElementById("collection").style.display = "none";
+            document.getElementById("shopTab").classList.add("active");
+            document.getElementById("collectionTab").classList.remove("active");
+        });
+
+        document.getElementById("collectionTab").addEventListener("click", function () {
+            document.getElementById("shop").style.display = "none";
+            document.getElementById("collection").style.display = "block";
+            document.getElementById("collectionTab").classList.add("active");
+            document.getElementById("shopTab").classList.remove("active");
+            updateCollection();
+        });
+
+        updateCollection();
     </script>
 </body>
 </html>
