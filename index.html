@@ -3,66 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мини-приложение</title>
+    <title>Магазин</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-        h1 {
-            color: #4CAF50;
-        }
-        .button {
-            background-color: #008CBA;
-            color: white;
-            padding: 15px 32px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .image-container {
-            display: none;
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
-    <h1>Добро пожаловать в магазин!</h1>
-    <p>Нажмите кнопку ниже, чтобы оплатить.</p>
-    
-    <button class="button" onclick="openPayment()">Оплатить</button>
-
-    <div class="image-container" id="imageContainer">
-        <h2>Поздравляем с покупкой!</h2>
-        <img src="https://yourimageurl.com/image.jpg" alt="Изображение" style="max-width: 100%; height: auto;">
-    </div>
+    <h1>Добро пожаловать в магазин</h1>
+    <button id="buyButton">Купить</button>
 
     <script>
-        // Функция для открытия инвойса через Telegram Web App
-        function openPayment() {
-            // Ссылка на инвойс
-            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";
+        window.Telegram.WebApp.ready();
+
+        // Обработчик кнопки "Купить"
+        document.getElementById("buyButton").addEventListener("click", async function() {
+            // В данном примере предполагается, что ваш бот генерирует ссылку на инвойс
+            // Для упрощения мы генерируем ссылку вручную, но можно сделать запрос к вашему боту, чтобы получить реальную ссылку
+
+            // Пример ссылки на инвойс (замените на реальную, генерируемую вашим ботом)
+            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";  // Замените на реальную ссылку
 
             // Открываем инвойс
-            window.Telegram.WebApp.openInvoice(invoiceLink, function() {
-                // Уведомление об успешной оплате
-                window.Telegram.WebApp.sendData("payment_success");
+            window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
+                if (status === "paid") {
+                    // После успешной оплаты обновляем UI
+                    alert("Покупка успешна! Ваш товар добавлен.");
+                    // Обновите интерфейс, чтобы показать товар
+                    document.body.innerHTML += '<img src="https://yourimageurl.com/product.jpg" alt="Product">';
+                } else {
+                    alert("Что-то пошло не так с оплатой.");
+                }
             });
-        }
-
-        // Прослушиваем данные от бота
-        window.Telegram.WebApp.onEvent('payment_success', function(data) {
-            // Показываем картинку после успешной оплаты
-            document.getElementById("imageContainer").style.display = "block";
         });
-
-        // Инициализация Telegram WebApp
-        window.Telegram.WebApp.ready();
     </script>
 </body>
 </html>
