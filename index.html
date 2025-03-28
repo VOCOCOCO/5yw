@@ -25,6 +25,14 @@
             cursor: pointer;
             border-radius: 4px;
         }
+        .image-container {
+            display: none;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 <body>
@@ -33,11 +41,16 @@
     
     <button class="button" onclick="openPayment()">Оплатить</button>
 
+    <div class="image-container" id="imageContainer">
+        <h2>Поздравляем! Вот ваша картинка:</h2>
+        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fbnkirov.ru%2Fnews%2Fpolitika%2Ftg-novosti-o-chem-na-nedele-pisali-regionalnye-telegram-kanaly-%2F&psig=AOvVaw2z3ZE5S14NhhzC5C33lISb&ust=1743246174588000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCMCMqZnQrIwDFQAAAAAdAAAAABAE" alt="Картинка">
+    </div>
+
     <script>
         // Функция для открытия инвойса через Telegram Web App
         function openPayment() {
-            // Ссылка на инвойс
-            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";
+            // Ссылка на инвойс (замени на свою ссылку с инвойсом)
+            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc"; 
             
             // Функция обратного вызова (необязательная)
             const callBack = function() {
@@ -47,6 +60,16 @@
             // Открываем инвойс
             window.Telegram.WebApp.openInvoice(invoiceLink, callBack);
         }
+
+        // Функция, которая будет вызываться после успешного платежа
+        function showImage() {
+            // Показать картинку после успешного платежа
+            document.getElementById('imageContainer').style.display = 'block';
+        }
+
+        // Эта функция должна быть вызвана после успешного платежа в вашем боте
+        // Для демонстрации мы вызовем её сразу через 3 секунды (симуляция успешной оплаты)
+        setTimeout(showImage, 3000);
     </script>
 </body>
 </html>
