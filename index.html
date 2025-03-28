@@ -3,39 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оплата XTR</title>
+    <title>Мини-приложение для оплаты</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
             text-align: center;
-            padding: 20px;
-            background: #f9f9f9;
         }
-        button {
-            background: #0088cc;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
+        h1 {
+            color: #4CAF50;
+        }
+        .button {
+            background-color: #008CBA;
+            color: white;
+            padding: 15px 32px;
             font-size: 16px;
+            border: none;
             cursor: pointer;
-            border-radius: 5px;
-            margin-top: 20px;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-
-    <h2>Оплатите 50 XTR</h2>
-    <button onclick="pay()">Оплатить</button>
+    <h1>Добро пожаловать в наш магазин!</h1>
+    <p>Нажмите кнопку ниже, чтобы оплатить и получить доступ к магазину.</p>
+    <button class="button" id="payButton">Оплатить</button>
 
     <script>
-        function pay() {
-            Telegram.WebApp.openInvoice({
-                slug: "https://t.me/$wSpK6H-UOEuiDgAABhWDvjlTrwQ" // Нужно создать инвойс в боте и вставить его slug
-            });
-        }
-    </script>
+        // Ссылка для оплаты (замени на свою)
+        const paymentLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";  // Заменить на свою ссылку
 
+        // Инициализация Telegram Web App
+        const telegramWebApp = Telegram.WebApp;
+
+        // Функция для открытия инвойса через WebApp
+        function openPaymentLink() {
+            // Открытие веб-приложения Telegram с нужной ссылкой
+            telegramWebApp.openLink(paymentLink);
+        }
+
+        // Обработчик нажатия на кнопку
+        document.getElementById("payButton").onclick = openPaymentLink;
+    </script>
 </body>
 </html>
