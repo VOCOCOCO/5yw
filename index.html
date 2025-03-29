@@ -259,13 +259,18 @@
             ownedGifts.forEach(gift => {
                 const giftDiv = document.createElement("div");
                 giftDiv.className = "gift";
-                giftDiv.onclick = () => openCollectionModal(gift.image, gift.rare);
+                giftDiv.onclick = () => openCollectionModal(gift.image, "1 из 250", gift.rare);
 
                 const img = document.createElement("img");
                 img.src = gift.image;
                 giftDiv.appendChild(img);
 
-                
+                if (gift.rare) {
+                    const badge = document.createElement("div");
+                    badge.className = "badge";
+                    
+                    giftDiv.appendChild(badge);
+                }
 
                 collectionContainer.appendChild(giftDiv);
             });
