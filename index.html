@@ -14,40 +14,52 @@
             margin: 0;
             padding: 20px;
             overflow-x: hidden;
-            box-sizing: border-box; /* Добавлено для точного расчета размеров */
         }
-        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #1e1e1e;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+        .tab.active {
+            background: #007bff;
+        }
+        .tab.inactive {
+            background: #333;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .tab.inactive:hover {
+            background: #333;
+        }
         .container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 подарка в одном ряду */
-            gap: 15px;
-            padding: 10px;
-            justify-items: center; /* Добавлено для выравнивания по центру */
-            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        
         .gift {
-            width: 100%;
-            max-width: 150px; /* Ограничиваем максимальную ширину подарка */
-            margin: 0 auto;
+            width: 48%; /* уменьшено до 48% для двух подарков в ряду */
             padding: 10px;
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.2s;
             position: relative;
-            box-sizing: border-box; /* Учитывает отступы и границы при расчете размеров */
         }
-        
         .gift img {
             width: 100%;
-            height: auto;
             border-radius: 10px;
         }
-        
         .gift:active {
             transform: scale(0.95);
         }
-        
         .price {
             position: absolute;
             bottom: 19px;
@@ -59,7 +71,6 @@
             font-weight: bold;
             font-size: 10px;
         }
-        
         .badge {
             position: absolute;
             top: 15px;
@@ -72,7 +83,6 @@
             font-weight: bold;
             z-index: 2;
         }
-        
         .modal {
             display: none;
             position: fixed;
@@ -85,7 +95,6 @@
             align-items: center;
             overflow: hidden;
         }
-        
         .modal-content {
             background: #1e1e1e;
             padding: 20px;
@@ -95,14 +104,12 @@
             position: relative;
             overflow: hidden;
         }
-        
         .modal img {
             width: 100%;
             max-width: 300px;
             border-radius: 10px;
             margin-bottom: 10px;
         }
-        
         .modal-badge {
             position: absolute;
             top: 15px;
@@ -115,14 +122,12 @@
             font-weight: bold;
             display: none;
         }
-        
         .close {
             color: white;
             float: right;
             font-size: 28px;
             cursor: pointer;
         }
-        
         .buy-button,
         .upgrade-button {
             background: #007bff;
@@ -135,18 +140,14 @@
             display: block;
             width: 100%;
         }
-        
         .upgrade-button {
             background: #6c757d;
             cursor: not-allowed;
         }
-        
         .modal-content button {
             margin: 10px auto;
         }
-        
-        #collection {
-            display: none;
+        #collection {display: none;
         }
     </style>
 </head>
@@ -236,7 +237,8 @@
 
             window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
                 if (status === "paid") {
-                    stock--;localStorage.setItem("stock", stock);
+                    stock--;
+                    localStorage.setItem("stock", stock);
                     document.getElementById("modalStock").innerText = `Осталось ${stock} из 250`;
 
                     ownedGifts.push({
