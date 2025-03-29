@@ -159,11 +159,11 @@
     </div>
     <div id="shop"> 
         <div class="container">
-            <div class="gift" onclick="openShopModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', 'Описание подарка', 250, true)">
+            <div class="gift" onclick="openShopModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', '', 250, true)">
                 <img src="photo_2025-03-29_11-25-53.jpg" alt="Подарок 1">
                 <div class="price">⭐️ 100</div>
             </div>
-            <div class="gift" onclick="openShopModal('101010.jfif', 'Подарок 2', 'Описание подарка', 250)">
+            <div class="gift" onclick">
                 <img src="101010.jfif" alt="Подарок 2">
                 <div class="price">⭐️ 100</div>
             </div>
@@ -184,7 +184,7 @@
             <p id="modalDescription">Описание</p>
             <p id="modalStock">Тираж: ? из 250</p>
             <button class="buy-button" id="buyButton" onclick="buyGift()">Купить за ⭐️100</button>
-            <button class="upgrade-button" id="upgradeButton" onclick="alert('Эта кнопка не активна!')">Улучшить</button>
+            <button class="upgrade-button" id="upgradeButton" onclick="alert('Скоро')">Улучшить</button>
         </div>
     </div>
 
@@ -198,7 +198,7 @@
             document.getElementById("modalImage").src = imageSrc;
             document.getElementById("modalTitle").innerText = title;
             document.getElementById("modalDescription").innerText = description;
-            document.getElementById("modalStock").innerText = `Тираж: ${totalStock} из 250`;
+            document.getElementById("modalStock").innerText = `1 из 250`;
             document.getElementById("modal").style.display = "flex";
 
             if (isRare) {
@@ -214,7 +214,7 @@
             document.getElementById("modalImage").src = imageSrc;
             document.getElementById("modalTitle").innerText = title;
             document.getElementById("modalDescription").innerText = "";
-            document.getElementById("modalStock").innerText = "Не доступно";
+            document.getElementById("modalStock").innerText = "";
             document.getElementById("modal").style.display = "flex";
 
             if (isRare) {
@@ -239,7 +239,7 @@
                 if (status === "paid") {
                     stock--;
                     localStorage.setItem("stock", stock);
-                    document.getElementById("modalStock").innerText = `Осталось ${stock} из 250`;
+                    document.getElementById("modalStock").innerText = `1 из 250`;
 
                     ownedGifts.push({
                         image: document.getElementById("modalImage").src,
@@ -259,18 +259,13 @@
             ownedGifts.forEach(gift => {
                 const giftDiv = document.createElement("div");
                 giftDiv.className = "gift";
-                giftDiv.onclick = () => openCollectionModal(gift.image, "Ваш подарок", gift.rare);
+                giftDiv.onclick = () => openCollectionModal(gift.image, gift.rare);
 
                 const img = document.createElement("img");
                 img.src = gift.image;
                 giftDiv.appendChild(img);
 
-                if (gift.rare) {
-                    const badge = document.createElement("div");
-                    badge.className = "badge";
-                    badge.innerText = "Редкий";
-                    giftDiv.appendChild(badge);
-                }
+                
 
                 collectionContainer.appendChild(giftDiv);
             });
