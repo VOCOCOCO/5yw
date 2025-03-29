@@ -14,6 +14,15 @@
             margin: 0;
             padding: 20px;
         }
+        .tab.inactive {
+            background: #333;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .tab.inactive:hover {
+            background: #333; /* Чтобы цвет не менялся при наведении */
+        }
         .tabs {
             display: flex;
             justify-content: center;
@@ -56,14 +65,26 @@
         }
         .price {
             position: absolute;
-            bottom: 18px;
+            bottom: 19px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(174, 255, 0, 0.071);
             padding: 5px 10px;
             border-radius: 10px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 10px;
+        }
+        .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 255, 0, 0.264);
+            color: rgba(255, 238, 0, 0.767);
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 8px;
+            font-weight: bold;
+            z-index: 2;
         }
         .modal {
             display: none;
@@ -82,6 +103,25 @@
             border-radius: 10px;
             text-align: center;
             width: 80%;
+            position: relative;
+        }
+        .modal img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .modal-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 255, 0, 0.264);
+            color: rgb(255, 238, 0, 0.767);
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            display: none;
         }
         .close {
             color: white;
@@ -104,21 +144,20 @@
     </style>
 </head>
 <body>
-    <h1>Магазин подарков</h1>
-
     <div class="tabs">
         <div class="tab active" id="shopTab">Магазин</div>
         <div class="tab" id="collectionTab">Коллекция</div>
+        <div class="tab inactive" id="p2pTab">Награды</div>
     </div>
 
     <div id="shop">
         <div class="container">
-            <div class="gift" id="gift1">
-                <img src="photo_2025-03-28_21-57-16.jpg" alt="Подарок 1">
-                <div class="price">⭐️ 5000</div>
+            <div class="gift" onclick="openModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', true)">
+                <span class="badge">Редкий</span>
+                <img src="photo_2025-03-29_11-25-53.jpg" alt="Подарок 1">
+                <div class="price">⭐️ 100</div>
             </div>
-            <div class="gift inactive" id="gift2">
-                <img src="101010.jfif" alt="Подарок 2">
+            <div class="gift inactive"><img src="101010.jfif" alt="Подарок 2">
             </div>
         </div>
     </div>
@@ -131,9 +170,11 @@
     <div class="modal" id="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Коллекционный Мамонт</h2>
-            <p>Осталось <span id="stock">250</span> из 250</p>
-            <button class="buy-button" onclick="buyGift()">Купить за ⭐️5000</button>
+            <span class="modal-badge" id="modalBadge">Редкий</span>
+            <img id="modalImage" src="" alt="Предпросмотр подарка">
+            <h2 id="modalTitle">Название подарка</h2>
+            <p>Осталось <span id="stock">?</span> из 250</p>
+            <button class="buy-button" onclick="buyGift()">Купить за ⭐️100</button>
         </div>
     </div>
 
@@ -143,11 +184,17 @@
         let stock = localStorage.getItem("stock") ? parseInt(localStorage.getItem("stock")) : 250;
         let ownedGifts = JSON.parse(localStorage.getItem("ownedGifts")) || [];
 
-        document.getElementById("stock").innerText = stock;
-
-        document.getElementById("gift1").addEventListener("click", function () {
+        function openModal(imageSrc, title, isRare = false) {
+            document.getElementById("modalImage").src = imageSrc;
+            document.getElementById("modalTitle").innerText = title;
             document.getElementById("modal").style.display = "flex";
-        });
+
+            if (isRare) {
+                document.getElementById("modalBadge").style.display = "block";
+            } else {
+                document.getElementById("modalBadge").style.display = "none";
+            }
+        }
 
         function closeModal() {
             document.getElementById("modal").style.display = "none";
@@ -160,9 +207,12 @@
                 if (status === "paid") {
                     stock--;
                     localStorage.setItem("stock", stock);
-                    document.getElementById("stock").innerText = stock;
-                    
-                    ownedGifts.push("photo_2025-03-28_21-57-16.jpg");
+                    document.getElementById("stock").innerText = `Осталось ${stock} из 250`;
+
+                    ownedGifts.push({
+                        image: document.getElementById("modalImage").src,
+                        rare: document.getElementById("modalBadge").style.display === "block"
+                    });
                     localStorage.setItem("ownedGifts", JSON.stringify(ownedGifts));
 
                     updateCollection();
@@ -178,29 +228,39 @@
             const collectionContainer = document.getElementById("collectionContainer");
             collectionContainer.innerHTML = "";
             ownedGifts.forEach(gift => {
+                const giftDiv = document.createElement("div");
+                giftDiv.classList.add("gift");
+                giftDiv.onclick = () => openModal(gift.image, "Ваш подарок", gift.rare);
+
                 const img = document.createElement("img");
-                img.src = gift;
+                img.src = gift.image;
                 img.style.width = "150px";
                 img.style.borderRadius = "10px";
-                collectionContainer.appendChild(img);
+                
+                if (gift.rare) {
+                    const badge = document.createElement("span");
+                    badge.classList.add("badge");
+                    badge.innerText = "Редкий";
+                    giftDiv.appendChild(badge);
+                }
+
+                giftDiv.appendChild(img);
+                collectionContainer.appendChild(giftDiv);
             });
         }
-
-        document.getElementById("shopTab").addEventListener("click", function () {
+        document.getElementById("shopTab").addEventListener("click", function() {
             document.getElementById("shop").style.display = "block";
             document.getElementById("collection").style.display = "none";
-            document.getElementById("shopTab").classList.add("active");
+            this.classList.add("active");
             document.getElementById("collectionTab").classList.remove("active");
         });
-
-        document.getElementById("collectionTab").addEventListener("click", function () {
+        
+        document.getElementById("collectionTab").addEventListener("click", function() {
             document.getElementById("shop").style.display = "none";
             document.getElementById("collection").style.display = "block";
-            document.getElementById("collectionTab").classList.add("active");
+            this.classList.add("active");
             document.getElementById("shopTab").classList.remove("active");
-            updateCollection();
         });
-
         updateCollection();
     </script>
 </body>
