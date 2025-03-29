@@ -40,13 +40,15 @@
             background: #333;
         }
         .container {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 подарка в одном ряду */
+            gap: 15px;
+            padding: 10px;
         }
         .gift {
-            width: 48%;
+            width: 100%;
+            max-width: 150px;  /* Ограничиваем максимальную ширину подарка */
+            margin: 0 auto;
             padding: 10px;
             border-radius: 10px;
             cursor: pointer;
@@ -55,8 +57,8 @@
         }
         .gift img {
             width: 100%;
+            height: auto;
             border-radius: 10px;
-            pointer-events: none;
         }
         .gift:active {
             transform: scale(0.95);
@@ -148,7 +150,8 @@
         .modal-content button {
             margin: 10px auto;
         }
-        #collection {display: none;
+        #collection {
+            display: none;
         }
     </style>
 </head>
@@ -238,8 +241,7 @@
 
             window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
                 if (status === "paid") {
-                    stock--;
-                    localStorage.setItem("stock", stock);
+                    stock--;localStorage.setItem("stock", stock);
                     document.getElementById("modalStock").innerText = `Осталось ${stock} из 250`;
 
                     ownedGifts.push({
