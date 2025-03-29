@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Магазин подарков</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -30,11 +30,18 @@
         .tab.active {
             background: #007bff;
         }
+        .tab.inactive {
+            background: #333;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .tab.inactive:hover {
+            background: #333;
+        }
         .container {
             display: flex;
             justify-content: center;
             gap: 10px;
-            flex-wrap: wrap;
         }
         .gift {
             width: 150px;
@@ -130,10 +137,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        .inactive-button {
-            background: #555;
-            cursor: not-allowed;
-        }
         #collection {
             display: none;
         }
@@ -143,119 +146,116 @@
     <div class="tabs">
         <div class="tab active" id="shopTab">Магазин</div>
         <div class="tab" id="collectionTab">Коллекция</div>
-        <div class="tab" id="p2pTab">P2P</div> <!-- Добавлена вкладка P2P -->
+        <div class="tab inactive" id="p2pTab">P2P</div>
     </div>
     <div id="shop">
-        <div class="container">
-            <div class="gift" onclick="openModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', true)">
-                <span class="badge">Редкий</span>
-                <img src="photo_2025-03-29_11-25-53.jpg" alt="Подарок 1">
-                <div class="price">⭐️ 100</div>
-            </div>
-            <div class="gift inactive"><img src="101010.jfif" alt="Подарок 2"></div>
+        <div class="container"><div class="gift" onclick="openModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', true)">
+            
+            <img src="photo_2025-03-29_11-25-53.jpg" alt="Подарок 1">
+            <div class="price">⭐️ 100</div>
         </div>
+        <div class="gift inactive"><img src="101010.jfif" alt="Подарок 2"></div>
     </div>
+</div>
 
-    <div id="collection">
-        <h2>Ваши подарки</h2>
-        <div class="container" id="collectionContainer"></div>
+<div id="collection">
+    <h2>Ваши подарки</h2>
+    <div class="container" id="collectionContainer"></div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="modal-badge" id="modalBadge">Редкий</span>
+        <img id="modalImage" src="" alt="Предпросмотр подарка">
+        <h2 id="modalTitle">Название подарка</h2>
+        <p>Осталось <span id="stock">?</span> из 250</p>
+        <button class="buy-button" onclick="buyGift()">Купить за ⭐️100</button>
     </div>
+</div>
 
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <span class="modal-badge" id="modalBadge">Редкий</span>
-            <img id="modalImage" src="" alt="Предпросмотр подарка">
-            <h2 id="modalTitle">Название подарка</h2>
-            <p>Осталось <span id="stock">?</span> из 250</p>
-            <button class="buy-button" onclick="buyGift()">Купить за ⭐️100</button>
-        </div>
-    </div>
+<script>
+    window.Telegram.WebApp.ready();
 
-    <script>
-        window.Telegram.WebApp.ready();
+    let stock = localStorage.getItem("stock") ? parseInt(localStorage.getItem("stock")) : 250;
+    let ownedGifts = JSON.parse(localStorage.getItem("ownedGifts")) || [];
 
-        let stock = localStorage.getItem("stock") ? parseInt(localStorage.getItem("stock")) : 250;
-        let ownedGifts = JSON.parse(localStorage.getItem("ownedGifts")) || [];
+    function openModal(imageSrc, title, isRare = false) {
+        document.getElementById("modalImage").src = imageSrc;
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("modal").style.display = "flex";
 
-        function openModal(imageSrc, title, isRare = false) {
-            document.getElementById("modalImage").src = imageSrc;
-            document.getElementById("modalTitle").innerText = title;
-            document.getElementById("modal").style.display = "flex";
+        if (isRare) {
+            document.getElementById("modalBadge").style.display = "block";
+        } else {
+            document.getElementById("modalBadge").style.display = "none";
+        }
+    }
 
-            if (isRare) {
-                document.getElementById("modalBadge").style.display = "block";
-            } else {
-                document.getElementById("modalBadge").style.display = "none";
+    function closeModal() {
+        document.getElementById("modal").style.display = "none";
+    }
+
+    function buyGift() {
+        const invoiceLink = "https://t.me/YOUR_BOT_USERNAME?start=paymentPayload";
+
+        window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
+            if (status === "paid") {
+                stock--;
+                localStorage.setItem("stock", stock);
+                document.getElementById("stock").innerText = `Осталось ${stock} из 250`;
+
+                ownedGifts.push({
+                    image: document.getElementById("modalImage").src,
+                    rare: document.getElementById("modalBadge").style.display === "block"
+                });
+                localStorage.setItem("ownedGifts", JSON.stringify(ownedGifts));
+
+                updateCollection();
+                alert("Поздравляем, подарок был добавлен в колекцию!");
+                closeModal();
+            } 
+        });
+    }
+
+    function updateCollection() {
+        const collectionContainer = document.getElementById("collectionContainer");
+        collectionContainer.innerHTML = "";
+        ownedGifts.forEach(gift => {
+            const giftDiv = document.createElement("div");
+            giftDiv.classList.add("gift");
+            giftDiv.onclick = () => openModal(gift.image, "Ваш подарок", gift.rare);
+
+            const img = document.createElement("img");
+            img.src = gift.image;
+            img.style.width = "150px";
+            img.style.borderRadius = "10px";
+            
+            if (gift.rare) {
+                const badge = document.createElement("span");
+                badge.classList.add("badge");
+                badge.innerText = "Редкий";
+                giftDiv.appendChild(badge);
             }
-        }
 
-        function closeModal() {
-            document.getElementById("modal").style.display = "none";
-        }
-
-        function buyGift() {
-            const invoiceLink = "https://t.me/YOUR_BOT_USERNAME?start=paymentPayload";
-
-            window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
-                if (status === "paid") {
-                    stock--;
-                    localStorage.setItem("stock", stock);
-                    document.getElementById("stock").innerText = `Осталось ${stock} из 250`;
-
-                    ownedGifts.push({
-                        image: document.getElementById("modalImage").src,
-                        rare: document.getElementById("modalBadge").style.display === "block"
-                    });
-                    localStorage.setItem("ownedGifts", JSON.stringify(ownedGifts));
-
-                    updateCollection();
-                    alert("Поздравляем, подарок куплен!");
-                    closeModal();
-                } else {
-                    alert("Оплата не прошла.");
-                }
-            });
-        }
-
-        function updateCollection() {
-            const collectionContainer = document.getElementById("collectionContainer");
-            collectionContainer.innerHTML = "";
-            ownedGifts.forEach(gift => {
-                const giftDiv = document.createElement("div");
-                giftDiv.classList.add("gift");
-                giftDiv.onclick = () => openModal(gift.image, "Ваш подарок", gift.rare);
-
-                const img = document.createElement("img");
-                img.src = gift.image;
-                img.style.width = "150px";
-                img.style.borderRadius = "10px";
-                
-                if (gift.rare) {
-                    const badge = document.createElement("span");
-                    badge.classList.add("badge");
-                    badge.innerText = "Редкий";
-                    giftDiv.appendChild(badge);
-                }
-
-                giftDiv.appendChild(img);
-                collectionContainer.appendChild(giftDiv);
-            });
-        }
-        document.getElementById("shopTab").addEventListener("click", function() {
-            document.getElementById("shop").style.display = "block";
-            document.getElementById("collection").style.display = "none";
-            this.classList.add("active");
-            document.getElementById("collectionTab").classList.remove("active");
+            giftDiv.appendChild(img);
+            collectionContainer.appendChild(giftDiv);
         });
-        
-        document.getElementById("collectionTab").addEventListener("click", function() {
-            document.getElementById("shop").style.display = "none";
-            document.getElementById("collection").style.display = "block";
-            this.classList.add("active");
-            document.getElementById("shopTab").classList.remove("active");
-        });
-        updateCollection();
-    </script>
+    }
+    document.getElementById("shopTab").addEventListener("click", function() {
+        document.getElementById("shop").style.display = "block";
+        document.getElementById("collection").style.display = "none";
+        this.classList.add("active");
+        document.getElementById("collectionTab").classList.remove("active");
+    });
+    
+    document.getElementById("collectionTab").addEventListener("click", function() {
+        document.getElementById("shop").style.display = "none";
+        document.getElementById("collection").style.display = "block";
+        this.classList.add("active");
+        document.getElementById("shopTab").classList.remove("active");
+    });
+    updateCollection();
+</script>
 </body>
 </html>
