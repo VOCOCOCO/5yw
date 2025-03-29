@@ -142,16 +142,16 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        #collection {
-            display: none;
-        }
         .upgrade-button {
             background: #6c757d;
             color: white;
             padding: 10px 20px;
-            border: none;border-radius: 5px;
-            cursor: not-allowed;
-            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: not-allowed;margin-top: 10px;
+        }
+        #collection {
+            display: none;
         }
     </style>
 </head>
@@ -163,7 +163,7 @@
     </div>
     <div id="shop"> 
         <div class="container">
-            <div class="gift" onclick="openModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', true)">
+            <div class="gift" onclick="openShopModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', '', 250, true)">
                 <img src="photo_2025-03-29_11-25-53.jpg" alt="Подарок 1">
                 <div class="price">⭐️ 100</div>
             </div>
@@ -182,8 +182,9 @@
             <span class="modal-badge" id="modalBadge">Редкий</span>
             <img id="modalImage" src="" alt="Предпросмотр подарка">
             <h2 id="modalTitle">Название подарка</h2>
-            <p>Осталось <span id="stock">?</span> из 250</p>
-            <button class="buy-button" onclick="buyGift()">Купить за ⭐️100</button>
+            <p id="modalDescription">Описание</p>
+            <p id="modalStock">Тираж: ? из 250</p>
+            <button class="buy-button" id="buyButton" onclick="buyGift()">Купить за ⭐️100</button>
             <button class="upgrade-button" id="upgradeButton" onclick="alert('Эта кнопка не активна!')">Улучшить</button>
         </div>
     </div>
@@ -194,9 +195,11 @@
         let stock = localStorage.getItem("stock") ? parseInt(localStorage.getItem("stock")) : 250;
         let ownedGifts = JSON.parse(localStorage.getItem("ownedGifts")) || [];
 
-        function openModal(imageSrc, title, isRare = false) {
+        function openShopModal(imageSrc, title, description, totalStock, isRare = false) {
             document.getElementById("modalImage").src = imageSrc;
             document.getElementById("modalTitle").innerText = title;
+            document.getElementById("modalDescription").innerText = description;
+            document.getElementById("modalStock").innerText = `Тираж: ? из 250`;
             document.getElementById("modal").style.display = "flex";
 
             if (isRare) {
@@ -204,6 +207,26 @@
             } else {
                 document.getElementById("modalBadge").style.display = "none";
             }
+            document.getElementById("upgradeButton").style.display = "none";
+            document.getElementById("buyButton").style.display = "block";
+        }
+
+        function openCollectionModal(imageSrc, title, isRare = false) {
+            document.getElementById("modalImage").src = imageSrc;
+            document.getElementById("modalTitle").innerText = title;
+            document.getElementById("modalDescription").innerText = "";
+            document.getElementById("modalStock").innerText = "Не доступно";
+            document.getElementById("modal").style.display = "flex";
+
+            if (isRare) {
+                document.getElementById("modalBadge").style.display = "block";
+            } else {
+                document.getElementById("modalBadge").style.display = "none";
+            }
+
+            // Скрыть кнопку "Купить" и показать кнопку "Улучшить"
+            document.getElementById("buyButton").style.display = "none";
+            document.getElementById("upgradeButton").style.display = "block";
         }
 
         function closeModal() {
@@ -211,63 +234,57 @@
         }
 
         function buyGift() {
-            const invoiceLink = "https://t.me/YOUR_BOT_USERNAME?start=paymentPayload";
+            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";
 
             window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
                 if (status === "paid") {
                     stock--;
                     localStorage.setItem("stock", stock);
-                    document.getElementById("stock").innerText = `Осталось ${stock} из 250`;
-
-                    ownedGifts.push({
+                    document.getElementById("modalStock").innerText = `1 из 250`;ownedGifts.push({
                         image: document.getElementById("modalImage").src,
-                        rare: document.getElementById("modalBadge").style.display === "block"
+                        rare: document.getElementById("modalBadge").style.display === "block",
                     });
-                    localStorage.setItem("ownedGifts", JSON.stringify(ownedGifts));
 
+                    localStorage.setItem("ownedGifts", JSON.stringify(ownedGifts));
                     updateCollection();
-                    alert("Поздравляем, подарок был добавлен в колекцию!");
-                    closeModal();
-                } 
+                }
             });
         }
 
         function updateCollection() {
             const collectionContainer = document.getElementById("collectionContainer");
-            collectionContainer.innerHTML = "";
+            collectionContainer.innerHTML = '';
+
             ownedGifts.forEach(gift => {
                 const giftDiv = document.createElement("div");
-                giftDiv.classList.add("gift");
-                giftDiv.onclick = () => openModal(gift.image, "Ваш подарок", gift.rare);
+                giftDiv.className = "gift";
+                giftDiv.onclick = () => openCollectionModal(gift.image, "Ваш подарок", gift.rare);
 
                 const img = document.createElement("img");
                 img.src = gift.image;
-                img.style.width = "150px";
-                img.style.borderRadius = "10px";
-                
-                if (gift.rare) {
-                    const badge = document.createElement("span");
-                    badge.classList.add("badge");
-                    badge.innerText = "Редкий";giftDiv.appendChild(badge);
-                }
                 giftDiv.appendChild(img);
+
+                if (gift.rare) {
+                    const badge = document.createElement("div");
+                    badge.className = "badge";
+                    badge.innerText = "Редкий";
+                    giftDiv.appendChild(badge);
+                }
+
                 collectionContainer.appendChild(giftDiv);
             });
         }
 
-        document.getElementById("shopTab").addEventListener("click", function() {
+        document.getElementById("shopTab").onclick = function() {
             document.getElementById("shop").style.display = "block";
             document.getElementById("collection").style.display = "none";
-            this.classList.add("active");
-            document.getElementById("collectionTab").classList.remove("active");
-        });
-        
-        document.getElementById("collectionTab").addEventListener("click", function() {
+        };
+
+        document.getElementById("collectionTab").onclick = function() {
             document.getElementById("shop").style.display = "none";
             document.getElementById("collection").style.display = "block";
-            this.classList.add("active");
-            document.getElementById("shopTab").classList.remove("active");
-        });
+            updateCollection();
+        };
 
         updateCollection();
     </script>
