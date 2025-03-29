@@ -41,12 +41,12 @@
         }
         .container {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             gap: 10px;
             flex-wrap: wrap;
         }
         .gift {
-            width: 150px;
+            width: 48%;
             padding: 10px;
             border-radius: 10px;
             cursor: pointer;
@@ -60,10 +60,6 @@
         }
         .gift:active {
             transform: scale(0.95);
-        }
-        .inactive {
-            opacity: 0.5;
-            cursor: default;
         }
         .price {
             position: absolute;
@@ -133,7 +129,8 @@
             font-size: 28px;
             cursor: pointer;
         }
-        .buy-button {
+        .buy-button,
+        .upgrade-button {
             background: #007bff;
             color: white;
             padding: 10px 20px;
@@ -141,17 +138,17 @@
             border-radius: 5px;
             cursor: pointer;
             margin-top: 10px;
+            display: block;
+            width: 100%;
         }
         .upgrade-button {
             background: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: not-allowed;margin-top: 10px;
+            cursor: not-allowed;
         }
-        #collection {
-            display: none;
+        .modal-content button {
+            margin: 10px auto;
+        }
+        #collection {display: none;
         }
     </style>
 </head>
@@ -163,11 +160,14 @@
     </div>
     <div id="shop"> 
         <div class="container">
-            <div class="gift" onclick="openShopModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', '', 250, true)">
+            <div class="gift" onclick="openShopModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', 'Описание подарка', 250, true)">
                 <img src="photo_2025-03-29_11-25-53.jpg" alt="Подарок 1">
                 <div class="price">⭐️ 100</div>
             </div>
-            <div class="gift inactive"><img src="101010.jfif" alt="Подарок 2"></div>
+            <div class="gift" onclick="openShopModal('101010.jfif', 'Подарок 2', 'Описание подарка', 250)">
+                <img src="101010.jfif" alt="Подарок 2">
+                <div class="price">⭐️ 100</div>
+            </div>
         </div>
     </div>
 
@@ -199,7 +199,7 @@
             document.getElementById("modalImage").src = imageSrc;
             document.getElementById("modalTitle").innerText = title;
             document.getElementById("modalDescription").innerText = description;
-            document.getElementById("modalStock").innerText = `Тираж: ? из 250`;
+            document.getElementById("modalStock").innerText = `Тираж: ${totalStock} из 250`;
             document.getElementById("modal").style.display = "flex";
 
             if (isRare) {
@@ -234,13 +234,15 @@
         }
 
         function buyGift() {
-            const invoiceLink = "https://t.me/$nPxJ3n-UOEukDgAA8erjOqzO-Vc";
+            const invoiceLink = "https://t.me/YOUR_BOT_USERNAME?start=paymentPayload";
 
             window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
                 if (status === "paid") {
                     stock--;
                     localStorage.setItem("stock", stock);
-                    document.getElementById("modalStock").innerText = `1 из 250`;ownedGifts.push({
+                    document.getElementById("modalStock").innerText = `Осталось ${stock} из 250`;
+
+                    ownedGifts.push({
                         image: document.getElementById("modalImage").src,
                         rare: document.getElementById("modalBadge").style.display === "block",
                     });
@@ -278,11 +280,15 @@
         document.getElementById("shopTab").onclick = function() {
             document.getElementById("shop").style.display = "block";
             document.getElementById("collection").style.display = "none";
+            document.getElementById("shopTab").classList.add("active");
+            document.getElementById("collectionTab").classList.remove("active");
         };
 
         document.getElementById("collectionTab").onclick = function() {
             document.getElementById("shop").style.display = "none";
             document.getElementById("collection").style.display = "block";
+            document.getElementById("collectionTab").classList.add("active");
+            document.getElementById("shopTab").classList.remove("active");
             updateCollection();
         };
 
