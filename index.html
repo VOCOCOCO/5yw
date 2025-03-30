@@ -2,296 +2,44 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Магазин подарков</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Откройте свой бокс!</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            text-align: center;
             background-color: #121212;
-            color: white;
-            text-align: center;
-            margin: 0;
+            color: #FFFFFF;
             padding: 20px;
-            overflow-x: hidden;
-        }
-        .tabs {
             display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #1e1e1e;
-            margin: 0 5px;
-            border-radius: 5px;
-            transition: 0.2s;
-        }
-        .tab.active {
-            background: #007bff;
-        }
-        .tab.inactive {
-            background: #333;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-        .tab.inactive:hover {
-            background: #333;
-        }
-        .container {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .gift {
-            width: 42%; /* уменьшено до 48% для двух подарков в ряду */
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            position: relative;
-        }
-        .gift img {
-            width: 100%;
-            border-radius: 10px;
-        }
-        .gift:active {
-            transform: scale(0.95);
-        }
-        .price {
-            position: absolute;
-            bottom: 19px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(174, 255, 0, 0.071);
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 10px;
-        }
-        .badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 255, 0, 0.264);
-            color: rgba(255, 238, 0, 0.767);
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 8px;
-            font-weight: bold;
-            z-index: 2;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            overflow: hidden;
-        }
-        .modal-content {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            width: 80%;
-            position: relative;
-            overflow: hidden;
-        }
-        .modal img {
-            width: 100%;
-            max-width: 300px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .modal-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 255, 0, 0.264);
-            color: rgb(255, 238, 0, 0.767);
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            display: none;
-        }
-        .close {
-            color: white;
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-        }
-        .buy-button,
-        .upgrade-button {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            display: block;
-            width: 100%;
-        }
-        .upgrade-button {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-        .modal-content button {
-            margin: 10px auto;
-        }
-        #collection {display: none;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
     </style>
+    <!-- Подключаем Lottie -->
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.7.10/build/player/lottie.min.js"></script>
 </head>
 <body>
-    <div class="tabs">
-        <div class="tab active" id="shopTab">Магазин</div>
-        <div class="tab" id="collectionTab">Коллекция</div>
-        <div class="tab inactive" id="p2pTab">P2P</div>
-    </div>
-    <div id="shop"> 
-        <div class="container">
-            <div class="gift" onclick="openShopModal('photo_2025-03-29_11-25-53.jpg', 'Brick chicken', '', 250, true)">
-                <img src="photo_2025-03-29_11-25-53.jpg" alt="Подарок 1">
-                <div class="price">⭐️ 100</div>
-            </div>
-            <div class="gift" onclick">
-                <img src="101010.jfif" alt="Подарок 2">
-                
-            </div>
-        </div>
-    </div>
 
-    <div id="collection">
-        <h2>Ваши подарки</h2>
-        <div class="container" id="collectionContainer"></div>
-    </div>
-
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <span class="modal-badge" id="modalBadge">Редкий</span>
-            <img id="modalImage" src="" alt="Предпросмотр подарка">
-            <h2 id="modalTitle">Название подарка</h2>
-            <p id="modalDescription">Описание</p>
-            <p id="modalStock">Тираж: ? из 250</p>
-            <button class="buy-button" id="buyButton" onclick="buyGift()">Купить за ⭐️100</button>
-            <button class="upgrade-button" id="upgradeButton" onclick="alert('Скоро')">Улучшить</button>
-        </div>
-    </div>
+    <!-- Контейнер для анимации -->
+    <div id="lottie-container" style="width: 300px; height: 300px;"></div>
 
     <script>
-        window.Telegram.WebApp.ready();
+        // Вставьте ваш URL JSON с GitHub
+        const animationUrl = "https://raw.githubusercontent.com/VOCOCOCO/stickers/refs/heads/main/Send%20me%20a%20Gift%20-%20%40DMJ_Stickers.json";
 
-        let stock = localStorage.getItem("stock") ? parseInt(localStorage.getItem("stock")) : 250;
-        let ownedGifts = JSON.parse(localStorage.getItem("ownedGifts")) || [];
-
-        function openShopModal(imageSrc, title, description, totalStock, isRare = false) {
-            document.getElementById("modalImage").src = imageSrc;
-            document.getElementById("modalTitle").innerText = title;
-            document.getElementById("modalDescription").innerText = description;
-            document.getElementById("modalStock").innerText = `1 из 250`;
-            document.getElementById("modal").style.display = "flex";
-
-            if (isRare) {
-                document.getElementById("modalBadge").style.display = "block";
-            } else {
-                document.getElementById("modalBadge").style.display = "none";
-            }
-            document.getElementById("upgradeButton").style.display = "none";
-            document.getElementById("buyButton").style.display = "block";
-        }
-
-        function openCollectionModal(imageSrc, title, isRare = false) {
-            document.getElementById("modalImage").src = imageSrc;
-            document.getElementById("modalTitle").innerText = title;
-            document.getElementById("modalDescription").innerText = "";
-            document.getElementById("modalStock").innerText = "";
-            document.getElementById("modal").style.display = "flex";
-
-            if (isRare) {
-                document.getElementById("modalBadge").style.display = "block";
-            } else {
-                document.getElementById("modalBadge").style.display = "none";
-            }
-
-            // Скрыть кнопку "Купить" и показать кнопку "Улучшить"
-            document.getElementById("buyButton").style.display = "none";
-            document.getElementById("upgradeButton").style.display = "block";
-        }
-
-        function closeModal() {
-            document.getElementById("modal").style.display = "none";
-        }
-
-        function buyGift() {
-            const invoiceLink = "https://t.me/$wuJg8k9NQUsFEQAAmjI6f8_tyK0";
-
-            window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
-                if (status === "paid") {
-                    stock--;
-                    localStorage.setItem("stock", stock);
-                    document.getElementById("modalStock").innerText = `1 из 250`;
-
-                    ownedGifts.push({
-                        image: document.getElementById("modalImage").src,
-                        rare: document.getElementById("modalBadge").style.display === "block",
-                    });
-
-                    localStorage.setItem("ownedGifts", JSON.stringify(ownedGifts));
-                    updateCollection();
-                }
-            });
-        }
-
-        function updateCollection() {
-            const collectionContainer = document.getElementById("collectionContainer");
-            collectionContainer.innerHTML = '';
-
-            ownedGifts.forEach(gift => {
-                const giftDiv = document.createElement("div");
-                giftDiv.className = "gift";
-                giftDiv.onclick = () => openCollectionModal(gift.image, "1 из 250", gift.rare);
-
-                const img = document.createElement("img");
-                img.src = gift.image;
-                giftDiv.appendChild(img);
-
-                if (gift.rare) {
-                    const badge = document.createElement("div");
-                    badge.className = "badge";
-                    
-                    
-                }
-
-                collectionContainer.appendChild(giftDiv);
-            });
-        }
-
-        document.getElementById("shopTab").onclick = function() {
-            document.getElementById("shop").style.display = "block";
-            document.getElementById("collection").style.display = "none";
-            document.getElementById("shopTab").classList.add("active");
-            document.getElementById("collectionTab").classList.remove("active");
-        };
-
-        document.getElementById("collectionTab").onclick = function() {
-            document.getElementById("shop").style.display = "none";
-            document.getElementById("collection").style.display = "block";
-            document.getElementById("collectionTab").classList.add("active");
-            document.getElementById("shopTab").classList.remove("active");
-            updateCollection();
-        };
-
-        updateCollection();
+        // Инициализация анимации Lottie
+        lottie.loadAnimation({
+            container: document.getElementById('lottie-container'), // Контейнер, куда будет загружена анимация
+            renderer: 'svg', // Рендеринг через SVG
+            loop: true, // Зациклить анимацию
+            autoplay: true, // Автоматически начать анимацию
+            path: animationUrl // Путь к вашему JSON файлу
+        });
     </script>
+
 </body>
 </html>
