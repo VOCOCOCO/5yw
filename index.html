@@ -63,7 +63,29 @@
             position: fixed;
             bottom: 0;
         }
+        .content {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
 
+        .hidden {
+            display: flex;
+            transform: translateX(100%);
+        }
+
+        .active {
+            transform: translateX(0);
+        }
         .nav-btn {
             background: none;
             border: none;
@@ -248,7 +270,19 @@
             profileScreen.classList.remove("hidden");
             gameScreen.classList.add("hidden");
         }
+        function showGameScreen() {
+            gameScreen.classList.add("active");
+            profileScreen.classList.remove("active");
+            profileScreen.classList.add("hidden");
+            gameScreen.classList.remove("hidden");
+        }
 
+        function showProfileScreen() {
+            profileScreen.classList.add("active");
+            gameScreen.classList.remove("active");
+            gameScreen.classList.add("hidden");
+            profileScreen.classList.remove("hidden");
+        }
         playBtn.addEventListener("click", showGameScreen);
         profileBtn.addEventListener("click", showProfileScreen);
     </script>
