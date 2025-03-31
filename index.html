@@ -11,31 +11,25 @@
             color: #FFFFFF;
             text-align: center;
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
             overflow: hidden;
-            position: relative;
-            transition: transform 0.5s ease-in-out;
-        }
-
-        .container {
-            width: 100%;
-            height: 100vh;
             display: flex;
-            transition: transform 0.5s ease-in-out;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .screen {
+        .content {
+            flex-grow: 1;
             width: 100%;
-            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            flex-shrink: 0;
+        }
+
+        .hidden {
+            display: none;
         }
 
         #sticker-container {
@@ -60,20 +54,14 @@
             background-color: rgba(211, 211, 211, 0.7);
         }
 
-        .divider {
-            width: 90%;
-            height: 2px;
-            background: rgba(211, 211, 211, 0.5);
-            margin: 20px 0;
-        }
-
-        .nav-buttons {
+        .nav-bar {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             width: 100%;
-            position: absolute;
-            bottom: 20px;
-            padding: 0 30px;
+            padding: 10px 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            bottom: 0;
         }
 
         .nav-btn {
@@ -81,8 +69,8 @@
             border: none;
             cursor: pointer;
             transition: transform 0.2s;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
         }
 
         .nav-btn img {
@@ -152,42 +140,37 @@
         }
 
         #profile-pic {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
 
         #profile-name {
-            font-size: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.7.10/build/player/lottie.min.js"></script><script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.7.10/build/player/lottie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <div class="container" id="app-container">
-        <div id="game-screen" class="screen">
-            <div id="sticker-container"></div>
-            <button id="open-btn" class="btn">Нажмите чтобы открыть подарок!</button>
-            <div class="divider"></div>
-            <div class="nav-buttons">
-                <button id="play-btn" class="nav-btn"><img src="play_icon.png" alt="Играть"></button>
-                <button id="profile-btn" class="nav-btn"><img src="profile_icon.png" alt="Профиль"></button>
-            </div>
-        </div>
+    <div class="content" id="game-screen">
+        <div id="sticker-container"></div><button id="open-btn" class="btn">Нажмите чтобы открыть подарок!</button>
+    </div>
 
-        <div id="profile-screen" class="screen">
-            <img id="profile-pic" src="default_avatar.png" alt="Фото профиля">
-            <div id="profile-name">Имя пользователя</div>
-            <div class="divider"></div>
-            <div class="nav-buttons">
-                <button id="play-btn2" class="nav-btn"><img src="play_icon.png" alt="Играть"></button>
-                <button id="profile-btn2" class="nav-btn"><img src="profile_icon.png" alt="Профиль"></button>
-            </div>
-        </div>
+    <div class="content hidden" id="profile-screen">
+        <img id="profile-pic" src="default_avatar.png" alt="Фото профиля">
+        <div id="profile-name">Имя пользователя</div>
+    </div>
+
+    <div class="nav-bar">
+        <button id="play-btn" class="nav-btn"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtI7K-ui3poE3xtjFlPI5OUeEigOOj_nlmxg&s" alt="Играть"></button>
+        <button id="profile-btn" class="nav-btn"><img src="profile_icon.png" alt="Профиль"></button>
     </div>
 
     <div id="win-modal" class="modal">
@@ -217,13 +200,15 @@
         Telegram.WebApp.ready();
         updateProfile();
 
-        const appContainer = document.getElementById("app-container");
         const openBtn = document.getElementById("open-btn");
         const winModal = document.getElementById("win-modal");
         const closeBtn = document.getElementById("close-btn");
 
-        const playBtns = document.querySelectorAll("#play-btn, #play-btn2");
-        const profileBtns = document.querySelectorAll("#profile-btn, #profile-btn2");
+        const gameScreen = document.getElementById("game-screen");
+        const profileScreen = document.getElementById("profile-screen");
+
+        const playBtn = document.getElementById("play-btn");
+        const profileBtn = document.getElementById("profile-btn");
 
         const stickers = [
             "https://example.com/sticker1.json",
@@ -254,8 +239,18 @@
         openBtn.addEventListener("click", openModal);
         closeBtn.addEventListener("click", () => winModal.classList.remove("show"));
 
-        profileBtns.forEach(btn => btn.addEventListener("click", () => appContainer.style.transform = "translateX(-100%)"));
-        playBtns.forEach(btn => btn.addEventListener("click", () => appContainer.style.transform = "translateX(0)"));
+        function showGameScreen() {
+            gameScreen.classList.remove("hidden");
+            profileScreen.classList.add("hidden");
+        }
+
+        function showProfileScreen() {
+            profileScreen.classList.remove("hidden");
+            gameScreen.classList.add("hidden");
+        }
+
+        playBtn.addEventListener("click", showGameScreen);
+        profileBtn.addEventListener("click", showProfileScreen);
     </script>
 
 </body>
