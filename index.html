@@ -21,29 +21,29 @@
             transition: transform 0.5s ease-in-out;
         }
 
-        /* Контейнер для контента */
+        /* Контейнер для экранов */
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* Экран */
         .screen {
             width: 100%;
             height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: transform 0.5s ease-in-out;
-        }
-
-        /* Профиль */
-        #profile-screen {
-            transform: translateX(100%);
+            flex-shrink: 0;
         }
 
         /* Контейнер стикера */
         #sticker-container {
-            width: 300px;
-            height: 300px;
+            width: 200px;
+            height: 200px;
             cursor: pointer;
         }
 
@@ -51,8 +51,8 @@
         .btn {
             background-color: rgba(211, 211, 211, 0.5);
             color: white;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 12px 24px;
+            font-size: 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -64,21 +64,22 @@
             background-color: rgba(211, 211, 211, 0.7);
         }
 
-        /* Разделительная линия */
+        /* Линия-разделитель */
         .divider {
             width: 90%;
             height: 2px;
             background: rgba(211, 211, 211, 0.5);
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
-        /* Контейнер кнопок */
+        /* Кнопки навигации */
         .nav-buttons {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             width: 100%;
             position: absolute;
             bottom: 20px;
+            padding: 0 30px;
         }
 
         .nav-btn {
@@ -86,6 +87,13 @@
             border: none;
             cursor: pointer;
             transition: transform 0.2s;
+            width: 50px;
+            height: 50px;
+        }
+
+        .nav-btn img {
+            width: 100%;
+            height: auto;
         }
 
         .nav-btn:active {
@@ -100,7 +108,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -120,7 +128,6 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            width: 100%;
         }
 
         .modal-text {
@@ -134,8 +141,8 @@
         .close-btn {
             background-color: rgba(211, 211, 211, 0.5);
             color: black;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 12px 24px;
+            font-size: 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -147,20 +154,21 @@
             background-color: rgba(211, 211, 211, 0.7);
         }
 
-        /* Контейнер для стикера в модальном окне */
+        /* Контейнер стикера в модальном окне */
         #win-sticker-container {
-            width: 250px;
-            height: 250px;
+            width: 200px;
+            height: 200px;
         }
 
         /* Профиль */
         #profile-pic {
-            width: 100px;
-            height: 100px;
+            width: 80px;height: 80px;
             border-radius: 50%;
             margin-bottom: 10px;
-        }#profile-name {
-            font-size: 22px;
+        }
+
+        #profile-name {
+            font-size: 20px;
         }
     </style>
 
@@ -170,21 +178,28 @@
 </head>
 <body>
 
-    <!-- Игровой экран -->
-    <div id="game-screen" class="screen">
-        <div id="sticker-container"></div>
-        <button id="open-btn" class="btn">Нажмите чтобы открыть подарок!</button>
-        <div class="divider"></div>
-        <div class="nav-buttons">
-            <button id="play-btn" class="nav-btn"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXrl5XbBQUzTVJ-LRbRpt5XIqe03CyGp0Qg&s" alt="Играть"></button>
-            <button id="profile-btn" class="nav-btn"><img src="profile_icon.png" alt="Профиль"></button>
+    <div class="container" id="app-container">
+        <!-- Игровой экран -->
+        <div id="game-screen" class="screen">
+            <div id="sticker-container"></div>
+            <button id="open-btn" class="btn">Нажмите чтобы открыть подарок!</button>
+            <div class="divider"></div>
+            <div class="nav-buttons">
+                <button id="play-btn" class="nav-btn"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXrl5XbBQUzTVJ-LRbRpt5XIqe03CyGp0Qg&s" alt="Играть"></button>
+                <button id="profile-btn" class="nav-btn"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXrl5XbBQUzTVJ-LRbRpt5XIqe03CyGp0Qg&s" alt="Профиль"></button>
+            </div>
         </div>
-    </div>
 
-    <!-- Профиль -->
-    <div id="profile-screen" class="screen">
-        <img id="profile-pic" alt="Фото профиля">
-        <div id="profile-name">Имя пользователя</div>
+        <!-- Профиль -->
+        <div id="profile-screen" class="screen">
+            <img id="profile-pic" alt="Фото профиля">
+            <div id="profile-name">Имя пользователя</div>
+            <div class="divider"></div>
+            <div class="nav-buttons">
+                <button id="play-btn2" class="nav-btn"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXrl5XbBQUzTVJ-LRbRpt5XIqe03CyGp0Qg&s" alt="Играть"></button>
+                <button id="profile-btn2" class="nav-btn"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXrl5XbBQUzTVJ-LRbRpt5XIqe03CyGp0Qg&s" alt="Профиль"></button>
+            </div>
+        </div>
     </div>
 
     <!-- Модальное окно -->
@@ -197,25 +212,24 @@
     </div>
 
     <script>
-        const openBtn = document.getElementById('open-btn');
-        const stickerContainer = document.getElementById('sticker-container');
-        const winModal = document.getElementById('win-modal');
-        const closeBtn = document.getElementById('close-btn');
-        const winStickerContainer = document.getElementById('win-sticker-container');
-
-        const gameScreen = document.getElementById('game-screen');
-        const profileScreen = document.getElementById('profile-screen');
-        const playBtn = document.getElementById('play-btn');
-        const profileBtn = document.getElementById('profile-btn');
-
+        const appContainer = document.getElementById("app-container");
+        const openBtn = document.getElementById("open-btn");
+        const stickerContainer = document.getElementById("sticker-container");
+        const winModal = document.getElementById("win-modal");
+        const closeBtn = document.getElementById("close-btn");
+        const winStickerContainer = document.getElementById("win-sticker-container");
+    
+        const playBtns = document.querySelectorAll("#play-btn, #play-btn2");
+        const profileBtns = document.querySelectorAll("#profile-btn, #profile-btn2");
+    
         const stickers = [
             "https://raw.githubusercontent.com/VOCOCOCO/stickers/refs/heads/main/Send%20me%20a%20Gift%20-%20%40DMJ_Stickers.json",
-            "https://raw.githubusercontent.com/VOCOCOCO/stickers/refs/heads/main/Send%20me%20a%20Gift%20-%20%40DMJ_Stickers.json",
-            "https://raw.githubusercontent.com/VOCOCOCO/stickers/refs/heads/main/Send%20me%20a%20Gift%20-%20%40DMJ_Stickers.json"
+            "https://example.com/sticker2.json",
+            "https://example.com/sticker3.json"
         ];
-
+    
         let chosenSticker = stickers[Math.floor(Math.random() * stickers.length)];
-
+    
         lottie.loadAnimation({
             container: stickerContainer,
             renderer: 'svg',
@@ -223,7 +237,7 @@
             autoplay: true,
             path: chosenSticker
         });
-
+    
         function launchConfetti() {
             confetti({
                 particleCount: 100,
@@ -231,12 +245,11 @@
                 origin: { y: 0.6 }
             });
         }
-
+    
         function openModal() {
             launchConfetti();
-            winStickerContainer.innerHTML = ""; 
+            winStickerContainer.innerHTML = "";
             winModal.classList.add('show');
-
             let newSticker = stickers[Math.floor(Math.random() * stickers.length)];
             lottie.loadAnimation({
                 container: winStickerContainer,
@@ -246,24 +259,23 @@
                 path: newSticker
             });
         }
-
-        function closeModal() {
-            winModal.classList.remove('show');
+    
+        closeBtn.addEventListener("click", () => winModal.classList.remove("show"));
+    
+        profileBtns.forEach(btn => btn.addEventListener("click", () => appContainer.style.transform = "translateX(-100%)"));
+        playBtns.forEach(btn => btn.addEventListener("click", () => appContainer.style.transform = "translateX(0)"));
+    
+        // Получение данных пользователя из Telegram Web Apps API
+        if (window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.expand(); // Разворачиваем мини-приложение на весь экран
+    
+            const user = Telegram.WebApp.initDataUnsafe.user;
+    
+            if (user) {
+                document.getElementById("profile-name").textContent = user.first_name;
+                document.getElementById("profile-pic").src = user.photo_url || "default_avatar.png";
+            }
         }
-
-        openBtn.addEventListener('click', openModal);
-        stickerContainer.addEventListener('click', openModal);
-        closeBtn.addEventListener('click', closeModal);
-
-        playBtn.addEventListener('click', () => {
-            gameScreen.style.transform = "translateX(0%)";
-            profileScreen.style.transform = "translateX(100%)";
-        });
-
-        profileBtn.addEventListener('click', () => {
-            gameScreen.style.transform = "translateX(-100%)";
-            profileScreen.style.transform = "translateX(0%)";
-        });
     </script>
 
 </body>
