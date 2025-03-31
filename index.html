@@ -16,6 +16,28 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* Контейнер для контента */
+        .screen {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* Профиль */
+        #profile-screen {
+            transform: translateX(100%);
         }
 
         /* Контейнер стикера */
@@ -42,6 +64,34 @@
             background-color: rgba(211, 211, 211, 0.7);
         }
 
+        /* Разделительная линия */
+        .divider {
+            width: 90%;
+            height: 2px;
+            background: rgba(211, 211, 211, 0.5);
+            margin: 30px 0;
+        }
+
+        /* Контейнер кнопок */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            position: absolute;
+            bottom: 20px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.9);
+        }
+
         /* Модальное окно */
         .modal {
             position: fixed;
@@ -49,8 +99,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -102,6 +152,16 @@
             width: 250px;
             height: 250px;
         }
+
+        /* Профиль */
+        #profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }#profile-name {
+            font-size: 22px;
+        }
     </style>
 
     <!-- Подключаем Lottie и конфетти -->
@@ -110,11 +170,22 @@
 </head>
 <body>
 
-    <!-- Контейнер для стикера -->
-    <div id="sticker-container"></div>
+    <!-- Игровой экран -->
+    <div id="game-screen" class="screen">
+        <div id="sticker-container"></div>
+        <button id="open-btn" class="btn">Нажмите чтобы открыть подарок!</button>
+        <div class="divider"></div>
+        <div class="nav-buttons">
+            <button id="play-btn" class="nav-btn"><img src="play_icon.png" alt="Играть"></button>
+            <button id="profile-btn" class="nav-btn"><img src="profile_icon.png" alt="Профиль"></button>
+        </div>
+    </div>
 
-    <!-- Кнопка -->
-    <button id="open-btn" class="btn">Нажмите чтобы открыть подарок!</button>
+    <!-- Профиль -->
+    <div id="profile-screen" class="screen">
+        <img id="profile-pic" alt="Фото профиля">
+        <div id="profile-name">Имя пользователя</div>
+    </div>
 
     <!-- Модальное окно -->
     <div id="win-modal" class="modal">
@@ -132,7 +203,11 @@
         const closeBtn = document.getElementById('close-btn');
         const winStickerContainer = document.getElementById('win-sticker-container');
 
-        // Список стикеров
+        const gameScreen = document.getElementById('game-screen');
+        const profileScreen = document.getElementById('profile-screen');
+        const playBtn = document.getElementById('play-btn');
+        const profileBtn = document.getElementById('profile-btn');
+
         const stickers = [
             "https://raw.githubusercontent.com/VOCOCOCO/stickers/refs/heads/main/Send%20me%20a%20Gift%20-%20%40DMJ_Stickers.json",
             "https://raw.githubusercontent.com/VOCOCOCO/stickers/refs/heads/main/Send%20me%20a%20Gift%20-%20%40DMJ_Stickers.json",
@@ -141,7 +216,6 @@
 
         let chosenSticker = stickers[Math.floor(Math.random() * stickers.length)];
 
-        // Загружаем начальный стикер
         lottie.loadAnimation({
             container: stickerContainer,
             renderer: 'svg',
@@ -150,7 +224,6 @@
             path: chosenSticker
         });
 
-        // Функция запуска конфетти
         function launchConfetti() {
             confetti({
                 particleCount: 100,
@@ -159,16 +232,12 @@
             });
         }
 
-        // Функция открытия модального окна
         function openModal() {
             launchConfetti();
-
+            winStickerContainer.innerHTML = ""; 
             winModal.classList.add('show');
 
-            // Выбираем случайный стикер для модального окна
             let newSticker = stickers[Math.floor(Math.random() * stickers.length)];
-
-            // Загружаем стикер в модальное окно
             lottie.loadAnimation({
                 container: winStickerContainer,
                 renderer: 'svg',
@@ -178,15 +247,23 @@
             });
         }
 
-        // Закрытие модального окна
         function closeModal() {
             winModal.classList.remove('show');
         }
 
-        // Обработчики событий
         openBtn.addEventListener('click', openModal);
         stickerContainer.addEventListener('click', openModal);
         closeBtn.addEventListener('click', closeModal);
+
+        playBtn.addEventListener('click', () => {
+            gameScreen.style.transform = "translateX(0%)";
+            profileScreen.style.transform = "translateX(100%)";
+        });
+
+        profileBtn.addEventListener('click', () => {
+            gameScreen.style.transform = "translateX(-100%)";
+            profileScreen.style.transform = "translateX(0%)";
+        });
     </script>
 
 </body>
